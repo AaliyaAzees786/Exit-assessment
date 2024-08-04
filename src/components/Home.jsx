@@ -1,35 +1,54 @@
-//Create the Home UI for the BlogAPP(Cards are preferrred; You may choose your UI preference )
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import { Grid } from '@mui/material';
 
 const Home = () => {
-  return (
-    <Card sx={{ maxWidth: 345, marginLeft:'5%', marginTop:'5%'}}>
-      <CardMedia
-        sx={{ height: 140 }}
-        image="/static/images/cards/contemplative-reptile.jpg"
-        title="green iguana"
-      />
-      <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
-          Lizard
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Lizards are a widespread group of squamate reptiles, with over 6,000
-          species, ranging across all continents except Antarctica
-        </Typography>
-      </CardContent>
-      <CardActions>
-        <Button size="small" variant='contained'>Delete</Button>
-        <Button size="small" variant='contained'>Update</Button>
-      </CardActions>
-    </Card>
-  )
-}
+  const [rows, setRows] = useState([]);
 
-export default Home
+  useEffect(() => {
+    axios.get('http://localhost:4000/blogs').then((res) => {
+      console.log(res);
+      setRows(res.data);
+    }).catch((err) => {
+      console.error(err);
+    });
+  }, []);
+
+  return (
+    <div>
+      <Grid container spacing={3}>
+      {rows.map((item, index) => (
+        <Grid item xs={12} sm={6} md={4} key={index}>
+        <Card key={index} sx={{ maxWidth: 345, marginLeft: '5%', marginTop: '15%' }}>
+          <CardMedia
+            sx={{ height: 140 }}
+            image={item.image}
+            title={item.name}
+          />
+          <CardContent>
+            <Typography gutterBottom variant="body2" component="div">
+              {item.name}
+            </Typography>
+            <Typography variant="h5" color="text.secondary">
+              {item.description}
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <Button size="small" variant="contained">Delete</Button>
+            <Button size="small" variant="contained">Update</Button>
+          </CardActions>
+        </Card>
+        </Grid>
+      ))}
+      </Grid>
+    </div>
+  );
+};
+
+export default Home;
